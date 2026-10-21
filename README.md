@@ -43,7 +43,7 @@ Each model file exports an object with:
 - `update()` draws the parts that follow the current rotation and returns the dot position (and optionally the rotation shown in the small window)
 - `controls` lists the model’s own sliders, play buttons, menus and checkboxes
 - `global: false` hides the shared rotation sliders for models that drive themselves
-- `text`, `formulas`, and `code` fill the section under the viewer
+- `text`, `formulas`, and `code` fill the section under the viewer.
 
 The comment at the top of `js/main.js` lists every option.
 
