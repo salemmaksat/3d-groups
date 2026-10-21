@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SO(3) Explorer</title>
+  <meta name="description" content="Interactive 3D models of SO(3), the space of all 3D rotations, with the formulas and code behind each one.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <p class="eyebrow">The rotation group</p>
+      <h1>SO(3) Explorer</h1>
+      <p class="lede">Every way to rotate an object in 3D forms a space of its own, called SO(3). That space is three-dimensional, but it does not fit inside our 3D world without a cheat. Here are thirteen ways to look at it: five pictures of the whole space, two surfaces that live inside it, its loops and its double cover SU(2), and the groups and motions built from it.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tabs-scroll">
+      <nav class="tabs" role="tablist" id="tabs" aria-label="Models"></nav>
+    </div>
+
+    <section class="app" aria-label="Viewer">
+      <div class="stage" id="stage">
+        <div class="inset-frame" id="insetFrame" aria-hidden="true"><span>object</span></div>
+        <p class="hint">drag to orbit · tap, then scroll or pinch to zoom</p>
+      </div>
+
+      <aside class="panel">
+        <div class="card" id="rotCard">
+          <div class="card-head">
+            <h2>Rotation</h2>
+            <div class="btns">
+              <button id="play" class="btn primary" aria-pressed="false">Play</button>
+              <button id="reset" class="btn">Reset</button>
+            </div>
+          </div>
+          <label class="ctl" for="az">
+            <span class="ctl-row"><span>Axis azimuth</span><output id="o-az"></output></span>
+            <input type="range" id="az" min="0" max="360" step="1">
+          </label>
+          <label class="ctl" for="pol">
+            <span class="ctl-row"><span>Axis tilt from z</span><output id="o-pol"></output></span>
+            <input type="range" id="pol" min="0" max="180" step="1">
+          </label>
+          <label class="ctl" for="spin">
+            <span class="ctl-row"><span>Spin about the axis</span><output id="o-spin"></output></span>
+            <input type="range" id="spin" min="0" max="720" step="1">
+          </label>
+        </div>
+        <div class="card" id="modelControls"></div>
+        <div class="card readout-card">
+          <dl class="readout" id="readout"></dl>
+        </div>
+        <div class="legend">
+          <span><i class="sw dot"></i>current rotation</span>
+          <span id="legendObj"><i class="sw obj"></i>the object, turned by it (bottom-right window)</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="about" aria-labelledby="modelTitle">
+      <div class="explain">
+        <p class="eyebrow">How this model works</p>
+        <h2 id="modelTitle"></h2>
+        <div id="modelText" class="prose"></div>
+      </div>
+      <div class="formulas">
+        <p class="eyebrow">Formulas</p>
+        <div id="modelMath"></div>
+      </div>
+      <div class="code">
+        <div class="code-head">
+          <div>
+            <p class="eyebrow">Code used to draw it</p>
+            <p class="file" id="codeFile"></p>
+          </div>
+          <button id="copy" class="btn">Copy</button>
+        </div>
+        <pre><code id="modelCode" class="language-javascript"></code></pre>
+        <p class="code-note">This is the exact source running on this page, read from the functions themselves.</p>
+      </div>
+    </section>
+
+    <section class="background" aria-labelledby="bgTitle">
+      <h2 id="bgTitle">Background</h2>
+      <div class="bg-grid">
+        <article>
+          <h3>What SO(3) is</h3>
+          <p>SO(3) is the set of all rotations of 3D space about a fixed point. As matrices, it is every 3×3 matrix R with RᵀR = I and det R = 1. Doing one rotation after another gives another rotation, so the set is a group.</p>
+          <p>It takes three numbers to pin down a rotation: two for the axis and one for the angle. So SO(3) is also a three-dimensional space you can move around in.</p>
+        </article>
+        <article>
+          <h3>Why it does not fit in 3D</h3>
+          <p>Take the ball model. To make it exact, you would glue every point of the surface to the point opposite it. The result has no surface at all. It is a closed 3D space, called real projective space ℝP³.</p>
+          <p>A closed 3D space can't sit inside ordinary 3D space, just as a sphere can't lie flat on a table. ℝP³ needs five dimensions to sit in without gluing. A printed Klein bottle cheats by letting its surface pass through itself. A solid can't pass through itself, so every model here marks the gluing with color, shape or position instead.</p>
+        </article>
+        <article>
+          <h3>How to read the models</h3>
+          <ul>
+            <li>The <b>yellow dot</b> is the rotation set by the sliders.</li>
+            <li>The <b>small window</b> shows an object turned by that rotation. The gray arrow is the rotation axis.</li>
+            <li>In the ball, shell, slice and quaternion models, the <b>center</b> is “no rotation”.</li>
+            <li>Same color or same shape means <b>same rotation</b>.</li>
+            <li>Spin past 180° and the dot jumps, while the object keeps turning smoothly. That jump is the gluing.</li>
+            <li>The spin slider goes to 720°. In SO(3), 360° and 720° look the same. In SU(2) they don’t.</li>
+          </ul>
+        </article>
+      </div>
+      <div class="refs">
+        <h3>Further reading</h3>
+        <ul>
+          <li><a href="https://en.wikipedia.org/wiki/3D_rotation_group" target="_blank" rel="noopener">3D rotation group</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula" target="_blank" rel="noopener">Rodrigues’ rotation formula</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation" target="_blank" rel="noopener">Quaternions and spatial rotation</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Hopf_fibration" target="_blank" rel="noopener">Hopf fibration</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Euler_angles" target="_blank" rel="noopener">Euler angles</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Plate_trick" target="_blank" rel="noopener">Plate trick</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Boy%27s_surface" target="_blank" rel="noopener">Boy’s surface</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Sudanese_M%C3%B6bius_band" target="_blank" rel="noopener">Sudanese Möbius band</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Point_groups_in_three_dimensions" target="_blank" rel="noopener">Point groups in 3D</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Slerp" target="_blank" rel="noopener">Slerp</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Built with three.js, KaTeX and Prism. Static site, no build step.</p>
+  </footer>
+
+  <script>window.Prism = { manual: true };</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
